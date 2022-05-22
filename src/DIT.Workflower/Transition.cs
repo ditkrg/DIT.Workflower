@@ -4,11 +4,11 @@ public record Transition<TState, TCommand>
     where TState : struct
     where TCommand : struct
 {
-    public TState From { get; set; }
+    public TState From { get; set; } = default!;
 
-    public TState To { get; set; }
+    public TState To { get; set; } = default!;
 
-    public TCommand Command { get; set; }
+    public TCommand Command { get; set; } = default!;
 
     public object? Meta { get; set; }
 }

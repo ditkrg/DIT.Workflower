@@ -18,9 +18,7 @@ public class DependencyInjectionTests
 
         var sc = new ServiceCollection();
 
-        sc.AddWorkflowDefinition<PhoneState, PhoneCommand, PhoneCall>(version: 1)
-
-            .From(PhoneState.Idle)
+        sc.AddWorkflowDefinition<PhoneState, PhoneCommand, PhoneCall>(initial: PhoneState.Idle, version: 1)
                 .On(PhoneCommand.IncomingCall)
                 .To(PhoneState.Ringing)
 
@@ -29,9 +27,7 @@ public class DependencyInjectionTests
                 .To(PhoneState.Connected)
             ;
 
-        sc.AddWorkflowDefinition<PhoneState, PhoneCommand, PhoneCall>(version: 2)
-
-            .From(PhoneState.Idle)
+        sc.AddWorkflowDefinition<PhoneState, PhoneCommand, PhoneCall>(initial: PhoneState.Idle, version: 2)
                 .On(PhoneCommand.IncomingCall)
                 .To(PhoneState.Ringing)
 

@@ -2,27 +2,27 @@ namespace DIT.Workflower.Tests;
 
 public class WorkflowConditionTests
 {
-    private WorkflowDefinitionBuilder<PhoneState, PhoneCommand, PhoneCall> GetDefaultBuilder()
+    private ITransitionOn<PhoneState, PhoneCommand, PhoneCall> GetDefaultBuilder()
     {
-        return new();
+        return WorkflowDefinitionBuilder<PhoneState, PhoneCommand, PhoneCall>.Initial(PhoneState.Idle);
     }
 
     [Fact]
     public void SingleConditionTests()
     {
         var phone = new PhoneCall(Active: false);
-        var builder1 = GetDefaultBuilder();
-        var builder2 = GetDefaultBuilder();
 
         var a = "b";
 
-        builder1
-            .From(PhoneState.Idle)
-            .When((res) => a == "n");
+        var builder1 = GetDefaultBuilder()
+            .On(PhoneCommand.Decline)
+            .When((res) => a == "n")
+            .To(PhoneState.Declined);
 
-        builder2
-            .From(PhoneState.Idle)
-            .When((res) => a == "b" && res.Active is false);
+        var builder2 = GetDefaultBuilder()
+            .On(PhoneCommand.Decline)
+            .When((res) => a == "b" && res.Active is false)
+            .To(PhoneState.OnHold);
 
         Assert.Empty(builder1.Build().GetAllowedTransitions(phone, PhoneState.Idle));
         Assert.Single(builder2.Build().GetAllowedTransitions(phone, PhoneState.Idle));
@@ -32,21 +32,21 @@ public class WorkflowConditionTests
     public void MultiConditionTests()
     {
         var phone = new PhoneCall();
-        var builder1 = GetDefaultBuilder();
-        var builder2 = GetDefaultBuilder();
 
         var a = "b";
         var other = a;
 
-        builder1
-            .From(PhoneState.Idle)
+        var builder1 = GetDefaultBuilder()
+            .On(PhoneCommand.Resume)
             .When((res) => a == "c")
-            .When((res) => other == a);
+            .When((res) => other == a)
+            .To(PhoneState.Connected);
 
-        builder2
-            .From(PhoneState.Idle)
+        var builder2 = GetDefaultBuilder()
+            .On(PhoneCommand.Resume)
             .When((res) => a == "b")
-            .When((res) => other == a);
+            .When((res) => other == a)
+            .To(PhoneState.Connected);
 
         Assert.Empty(builder1.Build().GetAllowedTransitions(phone, PhoneState.Idle));
         Assert.Single(builder2.Build().GetAllowedTransitions(phone, PhoneState.Idle));

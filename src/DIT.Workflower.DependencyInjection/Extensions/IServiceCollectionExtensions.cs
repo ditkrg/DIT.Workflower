@@ -5,25 +5,25 @@ namespace DIT.Workflower.DependencyInjection.Extensions;
 public static class IServiceCollectionExtensions
 {
 
-    public static WorkflowDefinitionBuilder<TState, TCommand, TContext> AddWorkflowDefinition<TState, TCommand, TContext>(this IServiceCollection services)
+    public static ITransitionOn<TState, TCommand, TContext> AddWorkflowDefinition<TState, TCommand, TContext>(this IServiceCollection services, TState initial)
         where TState : struct
         where TCommand : struct
     {
-        return AddWorkflowDefinition<TState, TCommand, TContext>(services, version: 1);
+        return AddWorkflowDefinition<TState, TCommand, TContext>(services, initial, version: 1);
     }
 
-    public static WorkflowDefinitionBuilder<TState, TCommand, TContext> AddWorkflowDefinition<TState, TCommand, TContext>(this IServiceCollection services, int version)
+    public static ITransitionOn<TState, TCommand, TContext> AddWorkflowDefinition<TState, TCommand, TContext>(this IServiceCollection services, TState initial, int version)
         where TState : struct
         where TCommand : struct
     {
-        var builder = new WorkflowDefinitionBuilder<TState, TCommand, TContext>();
+        var builder = WorkflowDefinitionBuilder<TState, TCommand, TContext>.Initial(initial);
 
         services.TryAddSingleton<IWorkflowFactory<TState, TCommand, TContext>, DefaultWorkflowFactory<TState, TCommand, TContext>>();
 
         services.AddSingleton<IWorkflow<TState, TCommand, TContext>, WorkflowDefinitionWrapper<TState, TCommand, TContext>>(sp =>
         {
-            var workflow = builder.Build();
-            var wrapper = new WorkflowDefinitionWrapper<TState, TCommand, TContext>(builder, version);
+            var definition = ((WorkflowDefinitionBuilder<TState, TCommand, TContext>)builder);
+            var wrapper = new WorkflowDefinitionWrapper<TState, TCommand, TContext>(definition, version);
             return wrapper;
         });
 
