@@ -4,7 +4,11 @@ public interface IWorkflow<TState, TCommand, TContext>
     where TState : struct
     where TCommand : struct
 {
+    string Id { get; }
+
     int Version { get; }
+
+    string Reference => $"{Id}.v{Version}";
 
     /// <summary>
     /// Gets a list of allowed transitions without any condition checks.

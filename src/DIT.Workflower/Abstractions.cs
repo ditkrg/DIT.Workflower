@@ -1,5 +1,12 @@
 namespace DIT.Workflower.Abstractions;
 
+public interface ITransitionStart<TState, TCommand, TContext>
+    where TState : struct
+    where TCommand : struct
+{
+    ITransitionOn<TState, TCommand, TContext> From(in TState state);
+}
+
 public interface ITransitionOn<TState, TCommand, TContext>
     where TState : struct
     where TCommand : struct
@@ -24,7 +31,7 @@ public interface ITransitionCondition<TState, TCommand, TContext> : ITransitionE
 
 }
 
-public interface ITransitionDone<TState, TCommand, TContext> : ITransitionOn<TState, TCommand, TContext>
+public interface ITransitionDone<TState, TCommand, TContext>
     where TState : struct
     where TCommand : struct
 {

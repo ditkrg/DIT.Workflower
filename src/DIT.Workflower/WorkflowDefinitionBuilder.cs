@@ -2,7 +2,8 @@
 
 namespace DIT.Workflower;
 
-public sealed class WorkflowDefinitionBuilder<TState, TCommand, TContext> : 
+public sealed class WorkflowDefinitionBuilder<TState, TCommand, TContext> :
+    ITransitionStart<TState, TCommand, TContext>,
     ITransitionOn<TState, TCommand, TContext>,
     ITransitionExit<TState, TCommand, TContext>,
     ITransitionCondition<TState, TCommand, TContext>,
@@ -17,11 +18,11 @@ public sealed class WorkflowDefinitionBuilder<TState, TCommand, TContext> :
 
     #region Constructor 
 
-    private WorkflowDefinitionBuilder(TState initialState)
-        => _current = new() { From = initialState };
-    
-    public static ITransitionOn<TState, TCommand, TContext> Initial(TState initialState)
-        => new WorkflowDefinitionBuilder<TState, TCommand, TContext>(initialState);
+    private WorkflowDefinitionBuilder()
+        => _current = new();
+
+    public static ITransitionStart<TState, TCommand, TContext> Create()
+        => new WorkflowDefinitionBuilder<TState, TCommand, TContext>();
 
     #endregion
 
@@ -69,8 +70,6 @@ public sealed class WorkflowDefinitionBuilder<TState, TCommand, TContext> :
 
     public WorkflowDefinition<TState, TCommand, TContext> Build()
     {
-        Transitions.Add(_current);
-
         if (!Transitions.Any())
             throw new InvalidOperationException("No transitions are added");
 

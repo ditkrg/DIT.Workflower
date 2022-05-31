@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using DIT.Workflower.DependencyInjection.Abstractions;
+﻿using DIT.Workflower.DependencyInjection.Abstractions;
 using DIT.Workflower.DependencyInjection.Extensions;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -17,8 +12,10 @@ public class DependencyInjectionTests
     {
 
         var sc = new ServiceCollection();
+        var id = "test";
 
-        sc.AddWorkflowDefinition<PhoneState, PhoneCommand, PhoneCall>(initial: PhoneState.Idle, version: 1)
+        sc.AddWorkflowDefinition<PhoneState, PhoneCommand, PhoneCall>(id, version: 1)
+            .From(PhoneState.Idle)
                 .On(PhoneCommand.IncomingCall)
                 .To(PhoneState.Ringing)
 
@@ -27,7 +24,8 @@ public class DependencyInjectionTests
                 .To(PhoneState.Connected)
             ;
 
-        sc.AddWorkflowDefinition<PhoneState, PhoneCommand, PhoneCall>(initial: PhoneState.Idle, version: 2)
+        sc.AddWorkflowDefinition<PhoneState, PhoneCommand, PhoneCall>(id, version: 2)
+            .From(PhoneState.Idle)
                 .On(PhoneCommand.IncomingCall)
                 .To(PhoneState.Ringing)
 
@@ -42,9 +40,11 @@ public class DependencyInjectionTests
 
         var sp = sc.BuildServiceProvider();
 
-        var workflowFactory = sp.GetService<IWorkflowFactory<PhoneState, PhoneCommand, PhoneCall>>();
-        var v1 = workflowFactory?.CreateWorkflow();
-        var v2 = workflowFactory?.CreateWorkflow(version: 2);
+        var workflowFactory = sp.GetService<IWorkflowFactory<PhoneState, PhoneCommand, PhoneCall>>()!;
+
+
+        var v1 = workflowFactory.CreateWorkflow(id);
+        var v2 = workflowFactory.CreateWorkflow(id, version: 2);
 
         Assert.NotNull(workflowFactory);
         Assert.NotNull(v1);

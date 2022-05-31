@@ -5,8 +5,8 @@ public interface IWorkflowFactory<TState, TCommand, TContext>
     where TCommand : struct
 {
 
-    public IWorkflow<TState, TCommand, TContext> CreateWorkflow();
+    public IWorkflow<TState, TCommand, TContext> CreateWorkflow(string id);
 
-    public IWorkflow<TState, TCommand, TContext> CreateWorkflow(int version);
+    public IWorkflow<TState, TCommand, TContext> CreateWorkflow(string id, int version);
 
 }
