@@ -18,7 +18,7 @@ public interface ITransitionExit<TState, TCommand, TContext>
     where TState : struct
     where TCommand : struct
 {
-    ITransitionDone<TState, TCommand, TContext> To(in TState command);
+    ITransitionDone<TState, TCommand, TContext> To(in TState state);
 }
 
 public interface ITransitionCondition<TState, TCommand, TContext> : ITransitionExit<TState, TCommand, TContext>
