@@ -10,6 +10,8 @@
 *.userosscache
 *.sln.docstates
 
+.sonarqube
+
 .vscode/*
 !.vscode/settings.json
 !.vscode/tasks.json
@@ -147,6 +149,7 @@ _TeamCity*
 !.axoCover/settings.json
 
 # Visual Studio code coverage results
+coverage.xml
 *.coverage
 *.coveragexml
 **/coverage
