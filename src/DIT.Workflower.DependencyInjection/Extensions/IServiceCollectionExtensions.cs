@@ -5,7 +5,15 @@ namespace DIT.Workflower.DependencyInjection.Extensions;
 public static class IServiceCollectionExtensions
 {
 
-    public static ITransitionStart<TState, TCommand, TContext> AddWorkflowDefinition<TState, TCommand, TContext>(this IServiceCollection services, string id)
+    public static ITransitionStart<TState, TCommand, TContext> AddWorkflowDefinition<TState, TCommand, TContext>(this IServiceCollection services, in int version = 1)
+        where TState : struct
+        where TCommand : struct
+    {
+        var id = WorkflowDefinitionWrapper<TState, TCommand, TContext>.GetDefaultId();
+        return AddWorkflowDefinition<TState, TCommand, TContext>(services, id, version);
+    }
+
+    public static ITransitionStart<TState, TCommand, TContext> AddWorkflowDefinition<TState, TCommand, TContext>(this IServiceCollection services, in string id)
         where TState : struct
         where TCommand : struct
     {

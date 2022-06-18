@@ -40,7 +40,7 @@ public class DependencyInjectionTests
 
         var sp = sc.BuildServiceProvider();
 
-        var workflowFactory = sp.GetService<IWorkflowFactory<PhoneState, PhoneCommand, PhoneCall>>()!;
+        var workflowFactory = sp.GetRequiredService<IWorkflowFactory<PhoneState, PhoneCommand, PhoneCall>>();
 
 
         var v1 = workflowFactory.CreateWorkflow(id);
@@ -56,6 +56,23 @@ public class DependencyInjectionTests
 
         Assert.Single(v1.GetAllowedTransitions(PhoneState.Ringing));
         Assert.Equal(2, v2.GetAllowedTransitions(PhoneState.Ringing).Count);
+    }
+
+    [Fact]
+    public void IdGenerationTest()
+    {
+        var sc = new ServiceCollection();
+
+        sc.AddWorkflowDefinition<PhoneState, PhoneCommand, PhoneCall>(version: 1)
+            .From(PhoneState.Idle)
+                .On(PhoneCommand.IncomingCall)
+                .To(PhoneState.Ringing);
+
+        var sp = sc.BuildServiceProvider();
+        var workflowFactory = sp.GetRequiredService<IWorkflowFactory<PhoneState, PhoneCommand, PhoneCall>>();
+        var workflow = workflowFactory.CreateWorkflow();
+
+        Assert.Equal("PhoneState_PhoneCommand_PhoneCall", workflow.Id);
     }
 
 }

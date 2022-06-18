@@ -19,7 +19,6 @@ Install the latest nuget package into your ASP.NET Core application.
     ```
 
 ### Workflow Builder
-In the `Program.cs`, register the Swagger generator, defining one or more Swagger documents.
 
 ```csharp
 using DIT.Workflower;
@@ -50,11 +49,13 @@ var allowedTransitions = workflow.GetAllowedTransitions(from: TState.State_2);
 
 ### Dependency Injection
 
+In the `Program.cs`, register the workflow factory, defining one or more workflow definitions.
+
 
 ```csharp
 public record PhoneCall(bool Active);
 
-services.AddWorkflowDefinition<PhoneState, PhoneCommand, PhoneCall>(version: 1)
+services.AddWorkflowDefinition<PhoneState, PhoneCommand, PhoneCall>(id: "constant-id", version: 1)
         // Idle -> Ringing (Incoming)
         .From(PhoneState.Idle)
             .On(PhoneCommand.IncomingCall)
@@ -80,7 +81,7 @@ public class SampleController : JsonApiControllerBase
 
     public SampleController(IWorkflowFactory<PhoneState, PhoneCommand, PhoneCall> factory)
     {
-        _workflow = factory.CreateWorkflow(version: 1); // Optional version param to support versioning on workflows.
+        _workflow = factory.CreateWorkflow(id: "constant-id", version: 1); // Optional version param to support versioning on workflows.
     }
 
     [HttpGet("{state}")]
@@ -92,4 +93,9 @@ public class SampleController : JsonApiControllerBase
         return Ok(transitions)
     }
 }
+```
+
+Note: If you do not specify an id for the workflow, the default id is:
+```csharp
+$"{typeof(TState).Name}_{typeof(TCommand).Name}_{typeof(TContext).Name}";
 ```

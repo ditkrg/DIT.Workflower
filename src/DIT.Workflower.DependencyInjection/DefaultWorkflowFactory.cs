@@ -12,10 +12,13 @@ public class DefaultWorkflowFactory<TState, TCommand, TContext> : IWorkflowFacto
         _serviceProvider = sp;
     }
 
-    public IWorkflow<TState, TCommand, TContext> CreateWorkflow(string id)
-        => CreateWorkflow(id, version: 1);
+    public IWorkflow<TState, TCommand, TContext> CreateWorkflow(int version = 1)
+    {
+        var id = WorkflowDefinitionWrapper<TState, TCommand, TContext>.GetDefaultId();
+        return CreateWorkflow(id, version);
+    }
 
-    public IWorkflow<TState, TCommand, TContext> CreateWorkflow(string id, int version)
+    public IWorkflow<TState, TCommand, TContext> CreateWorkflow(string id, int version = 1)
     {
         var reference = $"{id}.v{version}";
         var service = _serviceProvider.GetServices<IWorkflow<TState, TCommand, TContext>>()

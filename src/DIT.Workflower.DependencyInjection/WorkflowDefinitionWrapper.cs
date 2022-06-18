@@ -16,4 +16,9 @@ public record WorkflowDefinitionWrapper<TState, TCommand, TContext> : WorkflowDe
         Version = version;
     }
 
+    public static string GetDefaultId()
+    {
+        return $"{typeof(TState).Name}_{typeof(TCommand).Name}_{typeof(TContext).Name}";
+    }
+
 }
