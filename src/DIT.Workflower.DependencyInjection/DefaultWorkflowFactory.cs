@@ -1,5 +1,4 @@
-﻿
-namespace DIT.Workflower.DependencyInjection;
+﻿namespace DIT.Workflower.DependencyInjection;
 
 public class DefaultWorkflowFactory<TState, TCommand, TContext> : IWorkflowFactory<TState, TCommand, TContext>
         where TState : struct
@@ -13,16 +12,20 @@ public class DefaultWorkflowFactory<TState, TCommand, TContext> : IWorkflowFacto
         _serviceProvider = sp;
     }
 
-    public IWorkflow<TState, TCommand, TContext> CreateWorkflow()
-        => CreateWorkflow(version: 1);
-
-    public IWorkflow<TState, TCommand, TContext> CreateWorkflow(int version)
+    public IWorkflow<TState, TCommand, TContext> CreateWorkflow(int version = 1)
     {
+        var id = WorkflowDefinitionWrapper<TState, TCommand, TContext>.GetDefaultId();
+        return CreateWorkflow(id, version);
+    }
+
+    public IWorkflow<TState, TCommand, TContext> CreateWorkflow(string id, int version = 1)
+    {
+        var reference = $"{id}.v{version}";
         var service = _serviceProvider.GetServices<IWorkflow<TState, TCommand, TContext>>()
-            .FirstOrDefault(x => x.Version == version);
+            .FirstOrDefault(x => x.Reference == reference);
 
         if (service is null)
-            throw new ArgumentOutOfRangeException(nameof(version), $"Version {version} of workflow does not exist");
+            throw new KeyNotFoundException($"Workflow reference {id}.v{version} does not exist");
 
         return service;
     }

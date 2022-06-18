@@ -5,12 +5,20 @@ public record WorkflowDefinitionWrapper<TState, TCommand, TContext> : WorkflowDe
     where TCommand : struct
 {
 
+    public string Id { get; }
+
     public int Version { get; }
 
-    public WorkflowDefinitionWrapper(WorkflowDefinitionBuilder<TState, TCommand, TContext> builder, int version)
+    public WorkflowDefinitionWrapper(WorkflowDefinitionBuilder<TState, TCommand, TContext> builder, string id, int version)
         : base(builder.Transitions)
     {
+        Id = id;
         Version = version;
+    }
+
+    public static string GetDefaultId()
+    {
+        return $"{typeof(TState).Name}_{typeof(TCommand).Name}_{typeof(TContext).Name}";
     }
 
 }
