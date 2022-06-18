@@ -75,4 +75,19 @@ public class DependencyInjectionTests
         Assert.Equal("PhoneState_PhoneCommand_PhoneCall", workflow.Id);
     }
 
+    [Fact]
+    public void UnknownWorkflowReferenceThrows()
+    {
+        var sc = new ServiceCollection();
+
+        sc.AddWorkflowDefinition<PhoneState, PhoneCommand, PhoneCall>(version: 1)
+            .From(PhoneState.Idle)
+                .On(PhoneCommand.IncomingCall)
+                .To(PhoneState.Ringing);
+
+        var sp = sc.BuildServiceProvider();
+        var workflowFactory = sp.GetRequiredService<IWorkflowFactory<PhoneState, PhoneCommand, PhoneCall>>();
+        Assert.Throws<KeyNotFoundException>(() => workflowFactory.CreateWorkflow("unknown"));
+    }
+
 }

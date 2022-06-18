@@ -25,7 +25,7 @@ public class DefaultWorkflowFactory<TState, TCommand, TContext> : IWorkflowFacto
             .FirstOrDefault(x => x.Reference == reference);
 
         if (service is null)
-            throw new ArgumentOutOfRangeException(nameof(version), $"Workflow reference {id}.v{version} does not exist");
+            throw new KeyNotFoundException($"Workflow reference {id}.v{version} does not exist");
 
         return service;
     }
