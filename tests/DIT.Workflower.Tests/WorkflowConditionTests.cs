@@ -11,6 +11,7 @@ public class WorkflowConditionTests
     public void SingleConditionTests()
     {
         var phone = new PhoneCall(Active: false);
+        var meta = "String";
 
         var a = "b";
 
@@ -24,10 +25,14 @@ public class WorkflowConditionTests
             .From(PhoneState.Ringing)
             .On(PhoneCommand.Decline)
             .When((res) => a == "b" && res.Active is false)
+            .WithMeta(meta)
             .To(PhoneState.OnHold);
 
         Assert.Empty(builder1.Build().GetAllowedTransitions(phone, PhoneState.Ringing));
         Assert.Single(builder2.Build().GetAllowedTransitions(phone, PhoneState.Ringing));
+
+        // Check meta
+        Assert.Equal(meta, builder2.Build().GetAllowedTransitions(phone, PhoneState.Ringing).First().Meta);
     }
 
     [Fact]
@@ -55,4 +60,13 @@ public class WorkflowConditionTests
         Assert.Empty(builder1.Build().GetAllowedTransitions(phone, from: PhoneState.OnHold));
         Assert.Single(builder2.Build().GetAllowedTransitions(phone, from: PhoneState.OnHold));
     }
+
+    [Fact]
+    public void EmptyBuildThrowsError()
+    {
+        var builder1 = (WorkflowDefinitionBuilder<PhoneState, PhoneCommand, PhoneCall>)GetDefaultBuilder();
+
+        Assert.Throws<InvalidOperationException>(() => builder1.Build());
+    }
+
 }
