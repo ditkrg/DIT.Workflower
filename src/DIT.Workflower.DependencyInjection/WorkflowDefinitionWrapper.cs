@@ -18,7 +18,13 @@ public record WorkflowDefinitionWrapper<TState, TCommand, TContext> : WorkflowDe
 
     public static string GetDefaultId()
     {
-        return $"{typeof(TState).Name}_{typeof(TCommand).Name}_{typeof(TContext).Name}";
+        var ctxType = typeof(TContext);
+        var ctxName = ctxType.Name;
+
+        if (ctxType.IsGenericType)
+            ctxName = string.Join("+", typeof(TContext).GetGenericArguments().Select(x => x.Name));
+
+        return $"{typeof(TState).Name}_{typeof(TCommand).Name}_{ctxName}";
     }
 
 }

@@ -40,8 +40,7 @@ public class DependencyInjectionTests
 
         var sp = sc.BuildServiceProvider();
 
-        var workflowFactory = sp.GetRequiredService<IWorkflowFactory<PhoneState, PhoneCommand, PhoneCall>>();
-
+        var workflowFactory = sp.GetRequiredWorkflowFactory<PhoneState, PhoneCommand, PhoneCall>();
 
         var v1 = workflowFactory.CreateWorkflow(id);
         var v2 = workflowFactory.CreateWorkflow(id, version: 2);
@@ -62,6 +61,7 @@ public class DependencyInjectionTests
     public void IdGenerationTest()
     {
         var sc = new ServiceCollection();
+        const string expectedId = "PhoneState_PhoneCommand_PhoneCall";
 
         sc.AddWorkflowDefinition<PhoneState, PhoneCommand, PhoneCall>(version: 1)
             .From(PhoneState.Idle)
@@ -69,10 +69,12 @@ public class DependencyInjectionTests
                 .To(PhoneState.Ringing);
 
         var sp = sc.BuildServiceProvider();
-        var workflowFactory = sp.GetRequiredService<IWorkflowFactory<PhoneState, PhoneCommand, PhoneCall>>();
+        var workflowFactory = sp.GetRequiredWorkflowFactory<PhoneState, PhoneCommand, PhoneCall>();
         var workflow = workflowFactory.CreateWorkflow();
 
-        Assert.Equal("PhoneState_PhoneCommand_PhoneCall", workflow.Id);
+        Assert.Equal(expectedId, workflow.Id);
+        Assert.Equal(expectedId, sp.CreateWorkflow<PhoneState, PhoneCommand, PhoneCall>().Id);
+        Assert.Equal(expectedId, sp.CreateWorkflow<PhoneState, PhoneCommand, PhoneCall>(expectedId).Id);
     }
 
     [Fact]
@@ -86,7 +88,7 @@ public class DependencyInjectionTests
                 .To(PhoneState.Ringing);
 
         var sp = sc.BuildServiceProvider();
-        var workflowFactory = sp.GetRequiredService<IWorkflowFactory<PhoneState, PhoneCommand, PhoneCall>>();
+        var workflowFactory = sp.GetRequiredWorkflowFactory<PhoneState, PhoneCommand, PhoneCall>();
         Assert.Throws<KeyNotFoundException>(() => workflowFactory.CreateWorkflow("unknown"));
     }
 
