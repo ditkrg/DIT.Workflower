@@ -68,10 +68,14 @@ jobs:
 
       - name: Run tests (SonarQube)
         if: ${{ inputs.sonarqube }}
+        env:
+          PROJECT_KEY: ditkrg_DIT.Workflower_AYF14rjSb80e2b0bns3t
+          SONARQUBE_HOST: ${{ inputs.sonarqube_host }}
+          SONARQUBE_TOKEN: ${{ secrets.SONARQUBE_TOKEN }}
         run: |
           dotnet tool run dotnet-sonarscanner begin -k:"$PROJECT_KEY" \
             -d:sonar.login="$SONARQUBE_TOKEN" \
-            -d:sonar.host.url="${{ inputs.sonarqube_host }}" \
+            -d:sonar.host.url="$SONARQUBE_HOST" \
             -d:sonar.cs.vscoveragexml.reportsPaths=coverage.xml
 
           dotnet build --no-incremental
