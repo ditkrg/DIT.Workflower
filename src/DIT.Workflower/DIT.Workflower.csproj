@@ -5,6 +5,20 @@
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
 	  <LangVersion>latest</LangVersion>
+
+    <IsPackable>true</IsPackable>
+    <PackageId>DIT.Workflower</PackageId>
+    <Authors>DIT</Authors>
+    <Company>DIT</Company>
+
+    <!-- Symbols for nuget -->
+    <IncludeSymbols>true</IncludeSymbols>
+    <SymbolPackageFormat>snupkg</SymbolPackageFormat>
+
+    <!-- Deterministic Builds -->
+    <EmbedUntrackedSources>true</EmbedUntrackedSources>
+    <ContinuousIntegrationBuild Condition="'$(GITHUB_ACTIONS)' == 'true'">true</ContinuousIntegrationBuild>
+
   </PropertyGroup>
 
 </Project>
