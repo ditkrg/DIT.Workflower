@@ -12,6 +12,8 @@ public record WorkflowDefinition<TState, TCommand, TContext>
         _transitions = transitions;
     }
 
+    public List<TransitionDefinition<TState, TCommand, TContext>> GetAllTransitionDefinitions() => _transitions;
+
     /// <summary>
     /// Lists all allowed transitions from current state for the given context.
     /// </summary>
@@ -33,4 +35,33 @@ public record WorkflowDefinition<TState, TCommand, TContext>
 
         return query.Select(x => x.ToTransition()).ToList();
     }
+
+
+    public IEnumerable<Transition<TState, TCommand>> GetAllowedTransitions(ListTransitionsRequest<TState, TCommand, TContext> request)
+    {
+        var query = _transitions.AsQueryable();
+
+        if (request.From is TState from)
+        {
+            query = query.Where(doc => doc.From.Equals(from));
+        }
+
+        if (request.To is TState to)
+        {
+            query = query.Where(doc => doc.To.Equals(to));
+        }
+
+        if (request.Command is TCommand command)
+        {
+            query = query.Where(doc => doc.Command.Equals(command));
+        }
+
+        if (request.Context is not null)
+        {
+            query = query.Where(doc => doc.Conditions == null || !doc.Conditions.Any(cond => !cond(request.Context)));
+        }
+
+        return query.Select(x => x.ToTransition());
+    }
+
 }
