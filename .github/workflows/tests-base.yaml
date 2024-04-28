@@ -12,6 +12,19 @@ on:
       - "!.github/workflows/tests-base.yaml"
 
   workflow_call:
+    inputs:
+      sonarqube:
+        type: boolean
+        required: false
+        default: false
+
+      sonarqube_host:
+        type: string
+        required: false
+
+    secrets:
+      SONARQUBE_TOKEN:
+        required: false
 
 jobs:
   run-tests:
@@ -23,11 +36,44 @@ jobs:
       ASPNETCORE_ENVIRONMENT: Testing
 
     steps:
-      - uses: actions/checkout@v3
-
-      - uses: actions/setup-dotnet@v2
+      - uses: actions/setup-dotnet@v4
         with:
-          dotnet-version: "6.0.x"
+          dotnet-version: "8.0.x"
+
+      - uses: actions/checkout@v4
+        if: ${{ !inputs.sonarqube }}
 
       - name: Run tests
         run: dotnet test
+
+      ###############################
+      ########## SONARQUBE ##########
+      ###############################
+      - name: Set up JDK
+        uses: actions/setup-java@v4
+        if: ${{ inputs.sonarqube }}
+        with:
+          distribution: "zulu"
+          java-version: "17"
+
+      - uses: actions/checkout@v4
+        if: ${{ inputs.sonarqube }}
+        with:
+          fetch-depth: 0 # Shallow clones should be disabled for a better relevancy of analysis
+
+      - name: Restore tools
+        if: ${{ inputs.sonarqube }}
+        run: dotnet tool restore
+
+      - name: Run tests (SonarQube)
+        if: ${{ inputs.sonarqube }}
+        run: |
+          dotnet tool run dotnet-sonarscanner begin -k:"$PROJECT_KEY" \
+            -d:sonar.login="$SONARQUBE_TOKEN" \
+            -d:sonar.host.url="${{ inputs.sonarqube_host }}" \
+            -d:sonar.cs.vscoveragexml.reportsPaths=coverage.xml
+
+          dotnet build --no-incremental
+          dotnet dotnet-coverage collect "dotnet test" -f xml -o "coverage.xml"
+
+          dotnet tool run dotnet-sonarscanner end -d:sonar.login="$SONARQUBE_TOKEN"
