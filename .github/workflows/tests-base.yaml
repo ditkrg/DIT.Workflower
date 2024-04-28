@@ -2,6 +2,9 @@ name: Run Tests
 
 on:
   push:
+    branches-ignore:
+      - main
+
     paths-ignore:
       - "**.md"
 
@@ -15,9 +18,11 @@ on:
         required: false
         default: false
 
-    secrets:
-      SONARQUBE_HOST:
+      sonarqube_host:
+        type: string
         required: false
+
+    secrets:
       SONARQUBE_TOKEN:
         required: false
 
@@ -28,9 +33,6 @@ jobs:
     runs-on: ubuntu-latest
 
     env:
-      PROJECT_KEY: ditkrg_DIT.Workflower_AYF14rjSb80e2b0bns3t
-      SONARQUBE_HOST: ${{ secrets.SONARQUBE_HOST }}
-      SONARQUBE_TOKEN: ${{ secrets.SONARQUBE_TOKEN }}
       ASPNETCORE_ENVIRONMENT: Testing
 
     steps:
@@ -42,7 +44,6 @@ jobs:
         if: ${{ !inputs.sonarqube }}
 
       - name: Run tests
-        if: ${{ !inputs.sonarqube }}
         run: dotnet test
 
       ###############################
@@ -69,7 +70,7 @@ jobs:
         run: |
           dotnet tool run dotnet-sonarscanner begin -k:"$PROJECT_KEY" \
             -d:sonar.login="$SONARQUBE_TOKEN" \
-            -d:sonar.host.url="$SONARQUBE_HOST" \
+            -d:sonar.host.url="${{ inputs.sonarqube_host }}" \
             -d:sonar.cs.vscoveragexml.reportsPaths=coverage.xml
 
           dotnet build --no-incremental

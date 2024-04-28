@@ -1,0 +1,23 @@
+---
+name: Run SonarQube Analysis
+
+on:
+  push:
+    branches:
+      - main
+
+    paths-ignore:
+      - "**.md"
+      - ".vscode/**"
+
+concurrency:
+  group: sonarqube-analysis
+
+jobs:
+  test:
+    uses: ./.github/workflows/tests-base.yaml
+    with:
+      sonarqube: true
+      sonarqube_host: ${{ vars.SONARQUBE_HOST }}
+    secrets:
+      SONARQUBE_TOKEN: ${{ secrets.SONARQUBE_TOKEN }}
