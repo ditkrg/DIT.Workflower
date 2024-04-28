@@ -17,4 +17,4 @@ updates:
     schedule:
       interval: "daily"
     reviewers:
-      - "ditkrg/digital-development-net"
+      - "ditkrg/dotnet"
