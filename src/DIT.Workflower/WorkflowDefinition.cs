@@ -1,6 +1,6 @@
 ﻿namespace DIT.Workflower;
 
-public record WorkflowDefinition<TState, TCommand, TContext>
+public class WorkflowDefinition<TState, TCommand, TContext>
     where TState : struct
     where TCommand : struct
 {
@@ -41,24 +41,24 @@ public record WorkflowDefinition<TState, TCommand, TContext>
     {
         var query = _transitions.AsQueryable();
 
-        if (request.From is TState from)
+        if (request.From is { } from)
         {
             query = query.Where(doc => doc.From.Equals(from));
         }
 
-        if (request.To is TState to)
+        if (request.To is { } to)
         {
             query = query.Where(doc => doc.To.Equals(to));
         }
 
-        if (request.Command is TCommand command)
+        if (request.Command is { } command)
         {
             query = query.Where(doc => doc.Command.Equals(command));
         }
 
         if (request.Context is not null)
         {
-            query = query.Where(doc => doc.Conditions == null || !doc.Conditions.Any(cond => !cond(request.Context)));
+            query = query.Where(doc => doc.Conditions == null || doc.Conditions.All(cond => cond(request.Context)));
         }
 
         return query.Select(x => x.ToTransition());

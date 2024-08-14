@@ -17,7 +17,7 @@ public interface IWorkflow<TState, TCommand, TContext>
     /// <typeparam name="TCommand">The type of the workflow command.</typeparam>
     /// <typeparam name="TContext">The type of the workflow context.</typeparam>
     /// <returns>A list of transition definitions.</returns>
-    public List<TransitionDefinition<TState, TCommand, TContext>> GetAllTransitionDefinitions();
+    public List<TransitionDefinition<TState, TCommand, ContextWrapper<TContext>>> GetAllTransitionDefinitions();
 
     /// <summary>
     /// Gets a list of allowed transitions without any condition checks.

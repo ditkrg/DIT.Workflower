@@ -1,22 +1,22 @@
 namespace DIT.Workflower.DependencyInjection.Extensions;
 
-public static class IServiceProviderExtensions
+public static class ServiceProviderExtensions
 {
-    public static IWorkflowFactory<TState, TCommand, DIContextWrapper<TContext>> GetRequiredWorkflowFactory<TState, TCommand, TContext>(this IServiceProvider sp)
+    public static IWorkflowFactory<TState, TCommand, TContext> GetRequiredWorkflowFactory<TState, TCommand, TContext>(this IServiceProvider sp)
         where TState : struct
         where TCommand : struct
     {
-        return sp.GetRequiredService<IWorkflowFactory<TState, TCommand, DIContextWrapper<TContext>>>();
+        return sp.GetRequiredService<IWorkflowFactory<TState, TCommand, TContext>>();
     }
 
-    public static IWorkflowFactory<TState, TCommand, DIContextWrapper<TContext>>? GetWorkflowFactory<TState, TCommand, TContext>(this IServiceProvider sp)
+    public static IWorkflowFactory<TState, TCommand, TContext>? GetWorkflowFactory<TState, TCommand, TContext>(this IServiceProvider sp)
         where TState : struct
         where TCommand : struct
     {
-        return sp.GetService<IWorkflowFactory<TState, TCommand, DIContextWrapper<TContext>>>();
+        return sp.GetService<IWorkflowFactory<TState, TCommand, TContext>>();
     }
 
-    public static IWorkflow<TState, TCommand, DIContextWrapper<TContext>> CreateWorkflow<TState, TCommand, TContext>(this IServiceProvider sp, int version = 1)
+    public static IWorkflow<TState, TCommand, TContext> CreateWorkflow<TState, TCommand, TContext>(this IServiceProvider sp, int version = 1)
         where TState : struct
         where TCommand : struct
     {
@@ -24,7 +24,7 @@ public static class IServiceProviderExtensions
         return factory.CreateWorkflow(version);
     }
 
-    public static IWorkflow<TState, TCommand, DIContextWrapper<TContext>> CreateWorkflow<TState, TCommand, TContext>(this IServiceProvider sp, string id, int version = 1)
+    public static IWorkflow<TState, TCommand, TContext> CreateWorkflow<TState, TCommand, TContext>(this IServiceProvider sp, string id, int version = 1)
         where TState : struct
         where TCommand : struct
     {

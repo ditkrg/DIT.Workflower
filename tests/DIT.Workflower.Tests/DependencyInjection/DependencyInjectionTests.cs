@@ -1,5 +1,4 @@
-﻿using DIT.Workflower.DependencyInjection.Abstractions;
-using DIT.Workflower.DependencyInjection.Extensions;
+﻿using DIT.Workflower.DependencyInjection.Extensions;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace DIT.Workflower.Tests.DependencyInjection;
@@ -48,7 +47,6 @@ public class DependencyInjectionTests
         Assert.NotNull(workflowFactory);
         Assert.NotNull(v1);
         Assert.NotNull(v2);
-
 
         Assert.Single(v1!.GetAllowedTransitions(PhoneState.Idle));
         Assert.Single(v2!.GetAllowedTransitions(PhoneState.Idle));

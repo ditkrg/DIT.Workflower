@@ -1,20 +1,55 @@
 ﻿namespace DIT.Workflower.DependencyInjection;
 
-public record WorkflowDefinitionWrapper<TState, TCommand, TContext> : WorkflowDefinition<TState, TCommand, TContext>, IWorkflow<TState, TCommand, TContext>
+public sealed class WorkflowDefinitionWrapper<TState, TCommand, TContext> : IWorkflow<TState, TCommand, TContext>
     where TState : struct
     where TCommand : struct
 {
 
+    private readonly IServiceProvider _serviceProvider;
+    private readonly WorkflowDefinition<TState, TCommand, ContextWrapper<TContext>> _definition;
+
     public string Id { get; }
 
     public int Version { get; }
-
-    public WorkflowDefinitionWrapper(WorkflowDefinitionBuilder<TState, TCommand, TContext> builder, string id, int version)
-        : base(builder.Transitions)
+    public List<TransitionDefinition<TState, TCommand, ContextWrapper<TContext>>> GetAllTransitionDefinitions()
     {
+        return _definition.GetAllTransitionDefinitions();
+    }
+
+    public List<Transition<TState, TCommand>> GetAllowedTransitions(TState from)
+    {
+        return _definition.GetAllowedTransitions(from);
+    }
+
+    public List<Transition<TState, TCommand>> GetAllowedTransitions(TContext context, TState from)
+    {
+        return _definition.GetAllowedTransitions(GetContextWrapper(context), from);
+    }
+
+    public IEnumerable<Transition<TState, TCommand>> GetAllowedTransitions(ListTransitionsRequest<TState, TCommand, TContext> request)
+    {
+        var wrappedRequest = new ListTransitionsRequest<TState, TCommand, ContextWrapper<TContext>>
+        {
+            From = request.From,
+            To = request.To,
+            Command = request.Command,
+            Context = request.Context is null ? null : GetContextWrapper(request.Context)
+        };
+
+        return _definition.GetAllowedTransitions(wrappedRequest);
+    }
+
+    public WorkflowDefinitionWrapper(WorkflowDefinitionBuilder<TState, TCommand, ContextWrapper<TContext>> builder, IServiceProvider serviceProvider, string id, int version)
+    {
+        _definition = builder.Build();
+        _serviceProvider = serviceProvider;
+
         Id = id;
         Version = version;
     }
+
+    private ContextWrapper<TContext> GetContextWrapper(in TContext context)
+        => new(context, _serviceProvider);
 
     public static string GetDefaultId()
     {

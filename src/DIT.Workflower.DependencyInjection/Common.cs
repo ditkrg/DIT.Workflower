@@ -1,3 +1,3 @@
 namespace DIT.Workflower.DependencyInjection;
 
-public record DIContextWrapper<TContext>(TContext Context, IServiceProvider ServiceProvider);
+public record ContextWrapper<TContext>(TContext Context, IServiceProvider ServiceProvider);
