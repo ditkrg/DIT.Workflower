@@ -4,7 +4,6 @@ updates:
   # Maintain dependencies for GitHub Actions
   - package-ecosystem: "github-actions"
     directory: "/"
-    target-branch: dev
     schedule:
       interval: "daily"
     reviewers:
@@ -13,7 +12,6 @@ updates:
   # Maintain dependencies for nuget
   - package-ecosystem: "nuget"
     directory: "/"
-    target-branch: dev
     schedule:
       interval: "daily"
     reviewers:
