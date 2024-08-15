@@ -8,15 +8,15 @@ Workflower is a library based on .NET Standard, To handle Finite State Machines 
 
 Install the latest nuget package into your ASP.NET Core application.
 
-    ```sh
-    dotnet add package DIT.Workflower
-    ```
+```sh
+dotnet add package DIT.Workflower
+```
 
-    You can also download support for Dependency Injection:
+You can also download support for Dependency Injection:
 
-    ```sh
-    dotnet add package DIT.Workflower.DependencyInjection
-    ```
+```sh
+dotnet add package DIT.Workflower.DependencyInjection
+```
 
 ### Workflow Builder
 
